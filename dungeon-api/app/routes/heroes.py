@@ -34,4 +34,4 @@ def a(h : HeroModel):
 
             return he
             
-        raise HTTPException(status_code=400,detail="élément envoyé invalide")
+        raise HTTPException(status_code=422,detail="élément envoyé invalide")
