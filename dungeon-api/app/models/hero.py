@@ -14,7 +14,7 @@ class HeroClasse(str,Enum):
     VOLEUR      = "voleur"
 
 
-class Hero(Base, table=True) :
+class Hero(Base) :
     __tablename__ = "Héros"
 
     id = Column(Integer, primary_key=True, index=True)
