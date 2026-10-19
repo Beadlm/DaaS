@@ -9,6 +9,8 @@ class Hero():
         self.force = hero_bdd.force
         self.intelligence = hero_bdd.intelligence
 
+    def calculer_degats(self) :
+        return self.force
 
     def subir_degats(self,atk_monstre) :
         return atk_monstre
@@ -18,7 +20,7 @@ class Guerrier(Hero):
         return 2 + self.force * 2
 
     def subir_degats(self,atk_monstre) :
-            return atk_monstre -1 if atk_monstre -1 >= 1 else 1
+        return atk_monstre -1 if atk_monstre -1 >= 1 else 1
     
 class Mage(Hero):
     def calculer_degats(self) :

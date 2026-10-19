@@ -78,16 +78,20 @@ def MoveHero(hero_id:int,direction:str,session: Session = Depends(get_session)):
     if res == None:
         raise HTTPException(status_code=404,detail=f"Héro avec ID={hero_id} non trouvé" )
     if direction.lower() not in ["nord","sud","est","ouest"]:
-         raise HTTPException(status_code=422,detail=f"direction {direction} N'est pas une direction valide (nord,sud,est,ouest)" )
+        raise HTTPException(status_code=422,detail=f"direction {direction} N'est pas une direction valide (nord,sud,est,ouest)" )
     if direction.lower() not in json_dat["rooms"][res.salle]["exits"].keys():
-         raise HTTPException(status_code=400,detail="NO EXIT")
+        raise HTTPException(status_code=400,detail="NO EXIT")
     if res.monstre_pv > 0 : 
-         raise HTTPException(status_code=409,detail="NO EXIT")
-
+        raise HTTPException(status_code=409,detail="IN COMBAT")
+    if res.pv == 0 :
+        raise HTTPException(status_code=409,detail="HERO DEAD")
+    
     a =  json_dat["rooms"][res.salle]["exits"][direction]
     res.salle = a
     if json_dat["rooms"][res.salle]["monster"] != None:
          res.monstre_pv = json_dat["monsters"][json_dat["rooms"][res.salle]["monster"]]["hp"] #dit au jeu que le joueur est en combat
+    else : 
+         res.monstre_pv = 0 
     session.commit()
     return a
 
@@ -96,14 +100,17 @@ def MoveHero(hero_id:int,direction:str,session: Session = Depends(get_session)):
 #palier 3 :
 from app.domain import logic
 @router.post("/{hero_id}/attack")
-def a(hero_id:int,session: Session = Depends(get_session)):
-    
-         
+def a(hero_id:int,session: Session = Depends(get_session)):       
     res = session.query(hero.Hero).get(hero_id)
     if res == None:
         raise HTTPException(status_code=404,detail=f"Héro avec ID={hero_id} non trouvé")
     if json_dat["rooms"][res.salle]["monster"] == None:
          raise HTTPException(status_code=409,detail=f"NO_MONSTER")
+    if res.monstre_pv == 0 : 
+             raise HTTPException(status_code=409,detail="NO MONSTER")
+    if res.pv == 0 :
+         raise HTTPException(status_code=409,detail="HERO DEAD")
+    
     a = logic.Guerrier(res) #au cas où
     match res.classe : 
          
@@ -119,15 +126,17 @@ def a(hero_id:int,session: Session = Depends(get_session)):
     monstre = json_dat["monsters"][json_dat["rooms"][res.salle]["monster"]]
 
     di = a.calculer_degats()
-    crit = res.classe == HeroClasse.VOLEUR and a.count = 0
+    crit: bool = res.classe == HeroClasse.VOLEUR and a.count == 0
     ds = a.subir_degats(monstre["attack"])
     res.monstre_pv = res.monstre_pv - di if res.monstre_pv - di >= 0 else 0
-    if res.monstre_pv - di >= 0:
+    if res.monstre_pv >= 0:
         res.pv = res.pv - ds if res.pv - ds >= 0 else 0
 
-    issue = "monstre_vaincu" if res.monstre_pv == 0 else "heros_mort" if res.pv == 0 else "en cours"
+    issue = "monstre_vaincu" if res.monstre_pv == 0 else "heros_mort" if res.pv == 0 else "en_cours"
     org = 0 if issue in ["en_cours", "heros_mort"] else monstre["gold"]
+    res.or_ += org
     vic = issue == "monstre_vaincu" and monstre["name"] == "La Liche"
+    session.commit()
     return { 
         "degats_infliges": di,
         "critique": crit,
