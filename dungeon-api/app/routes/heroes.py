@@ -55,12 +55,28 @@ def getHero(hero_id : int,session: Session = Depends(get_session)):
 #palier 2
 from pathlib import Path
 dir = Path(__file__).resolve().parent.parent.parent / "data" / "dungeon_map.json"
+with open(dir) as data:
+    json_dat = json.load(data)
+
 @router.get("/{hero_id}/room")
 def a(hero_id : int,session: Session = Depends(get_session)):
     res = session.query(hero.Hero).get(hero_id)
     if res == None:
         raise HTTPException(status_code=404,detail=f"Héro avec ID={hero_id} non trouvé" )
-    with open(dir) as data:
+    return json_dat["rooms"][res.salle]
 
-         a = json.load(data)
-    return a["rooms"][res.salle]
+
+@router.post("/{hero_id}/move")
+def b(hero_id:int,direction:str,session: Session = Depends(get_session)):
+    res = session.query(hero.Hero).get(hero_id)
+    if res == None:
+        raise HTTPException(status_code=404,detail=f"Héro avec ID={hero_id} non trouvé" )
+    if direction.lower() not in ["nord","sud","est","ouest"]:
+         raise HTTPException(status_code=422,detail=f"direction {direction} N'est pas une direction valide (nord,sud,est,ouest)" )
+    if direction.lower() not in json_dat["rooms"][res.salle]["exits"].keys():
+         raise HTTPException(status_code=400,detail="NO EXIT")
+
+    a =  json_dat["rooms"][res.salle]["exits"][direction]
+    res.salle = a
+    session.commit()
+    return a
