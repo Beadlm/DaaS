@@ -1,20 +1,31 @@
 from enum import Enum
-from sqlmodel import SQLModel, Field
-class HeroClasse (str,Enum):
+
+from sqlalchemy import create_engine, Column, Integer, String
+from sqlalchemy.orm import declarative_base, sessionmaker
+from sqlalchemy.pool import StaticPool
+
+
+Base = declarative_base()
+
+
+class HeroClasse(str,Enum):
     GUERRIER    = "guerrier"
     MAGE        = "mage"
     VOLEUR      = "voleur"
 
-class Hero(SQLModel, table=True) :
+
+class Hero(Base, table=True) :
     __tablename__ = "Héros"
 
-    id : int | None = Field(default=0, primary_key=True)
-    salle : str = "entree"
+    id = Column(Integer, primary_key=True, index=True)
+    salle =  Column(String)
+    nom = Column(String)
+    classe = Column(String)
+    force = Column(Integer)
+    agilite = Column(Integer)
+    intelligence = Column(Integer)
 
-    nom : str = Field(..., min_length=3, max_length=20)
-    classe : HeroClasse
-    force : int
-    agilite : int
-    intelligence : int
 
-
+engine = create_engine("sqlite://", connect_args={"check_same_thread": False}, poolclass=StaticPool)
+Base.metadata.create_all(bind=engine)
+SessionLocal = sessionmaker(bind=engine)

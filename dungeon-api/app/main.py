@@ -12,10 +12,10 @@ from fastapi import FastAPI
 from app.database import create_db_and_tables
 
 # TODO (palier 1) : importez ici vos modèles de tables pour que SQLModel les connaisse
-# from app.models.hero import Hero  # noqa: F401
+from app.models.hero import Hero  # noqa: F401
 
 # TODO : importez vos routers
-# from app.routes import heroes
+from app.routes import heroes
 
 
 @asynccontextmanager

@@ -1,6 +1,7 @@
 from fastapi import FastAPI, APIRouter, HTTPException
 from pydantic import BaseModel, Field
 from enum import Enum
+from models import hero
 router = APIRouter(prefix="/heroes", tags=["Héros"])
 
 class HeroClasse (str,Enum):
