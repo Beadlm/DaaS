@@ -63,4 +63,4 @@ def a(hero_id : int,session: Session = Depends(get_session)):
     with open(dir) as data:
 
          a = json.load(data)
-    return a["room"][res.salle]
+    return a["rooms"][res.salle]
