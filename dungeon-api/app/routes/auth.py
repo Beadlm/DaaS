@@ -3,13 +3,14 @@ from pydantic import BaseModel, Field
 from enum import Enum
 from app.models import accounts
 from app.database import *
-import bcrypt
 import uuid
-from passlib.context import CryptContext
-from jose import jwt
+import jwt
+from pwdlib import PasswordHash
 
 
-pwd = CryptContext(schemes=["pbkdf2_sha256"])
+pwd = PasswordHash.recommended()
+
+
 
 router = APIRouter(prefix="/auth", tags=["Authentification"])
 
