@@ -1,10 +1,7 @@
 from enum import Enum
 
 from sqlalchemy import Column, Integer, String
-from sqlalchemy.orm import declarative_base
-
-
-Base = declarative_base()
+from sqlmodel import SQLModel
 
 
 class HeroClasse(str,Enum):
@@ -13,8 +10,8 @@ class HeroClasse(str,Enum):
     VOLEUR      = "voleur"
 
 
-class Hero(Base) :
-    __tablename__ = "Héros"
+class Hero(SQLModel,table=True) :
+    __tablename__ = "Heros"
 
     id = Column(Integer, primary_key=True, index=True)
     salle =  Column(String)

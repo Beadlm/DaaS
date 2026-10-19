@@ -40,13 +40,11 @@ def a(h : HeroModel, session: Session = Depends(get_session)):
 
 @router.get("/heroes")
 def b(session: Session = Depends(get_session)):
-    with hero.SessionLocal() as session:
         return session.query(hero.Hero).all()
 
 
 @router.get("/heroes/{hero_id}")
 def c(hero_id : int,session: Session = Depends(get_session)):
-    with hero.SessionLocal() as session:
         res = session.query(hero.Hero).get(hero_id)
         if res == None:
             raise HTTPException(status_code=404,detail=f"Héro avec ID={hero_id} non trouvé" )
