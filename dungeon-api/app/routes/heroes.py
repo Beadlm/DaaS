@@ -19,7 +19,7 @@ class HeroModel(BaseModel) :
 @router.post("/heroes",status_code=201)
 def a(h : HeroModel):
     with hero.SessionLocal() as session:
-        if h.force + h.agilite + h.intelligence == 10 :
+        if h.force + h.agilite + h.intelligence == 10 : #je peux pas faire ça sur pydantic si?
             he = hero.Hero()
             he.nom = h.nom
             he.classe = h.classe
@@ -35,3 +35,18 @@ def a(h : HeroModel):
             return he
             
         raise HTTPException(status_code=422,detail="élément envoyé invalide")
+
+
+@router.get("/heroes")
+def b():
+    with hero.SessionLocal() as session:
+        return session.query(hero.Hero).all()
+
+
+@router.get("/heroes/{hero_id}")
+def c(hero_id : int):
+    with hero.SessionLocal() as session:
+        res = session.query(hero.Hero).get(hero_id)
+        if res == None:
+            raise HTTPException(status_code=404,detail=f"Héro avec ID={hero_id} non trouvé" )
+        return res
