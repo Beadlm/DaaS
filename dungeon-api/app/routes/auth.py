@@ -25,3 +25,6 @@ def a(rm:RegisterModel,session: Session = Depends(get_session)):
     a = accounts.Account()
     a.name = rm.name
     a.pwd = pwd.hash(rm.password)
+    session.add(a)
+    session.commit()
+    session.refresh(a)
