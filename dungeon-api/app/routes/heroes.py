@@ -4,7 +4,7 @@ from enum import Enum
 from app.models import hero
 from app.database import *
 import json
-
+from app.routes import auth
 router = APIRouter(prefix="/heroes", tags=["Héros"])
 
 class HeroClasse (str,Enum):
@@ -20,7 +20,7 @@ class HeroModel(BaseModel) :
     intelligence : int = Field(...,ge=1,le=8)
 
 @router.post("",status_code=201)
-def addHero(h : HeroModel, session: Session = Depends(get_session)):
+def addHero(h : HeroModel, session: Session = Depends(get_session),owner_id = Depends(auth.check_user)):
     if h.force + h.agilite + h.intelligence == 10 : #je peux pas faire ça sur pydantic si?
         he = hero.Hero()
         he.nom = h.nom
@@ -34,7 +34,7 @@ def addHero(h : HeroModel, session: Session = Depends(get_session)):
 
         he.pv_max = 20 + h.force * 2
         he.pv = he.pv_max
-
+        he.owner_id = owner_id
         session.add(he)
         session.commit()
         session.refresh(he)
@@ -50,10 +50,12 @@ def getAllHeroes(session: Session = Depends(get_session)):
 
 
 @router.get("/{hero_id}")
-def getHero(hero_id : int,session: Session = Depends(get_session)):
+def getHero(hero_id : int,session: Session = Depends(get_session),owner_id = Depends(auth.check_user)):
         res = session.query(hero.Hero).get(hero_id)
         if res == None:
             raise HTTPException(status_code=404,detail=f"Héro avec ID={hero_id} non trouvé" )
+        if res.owner_id != owner_id : 
+             raise HTTPException(status_code=403,detail="NOT_YOUR_HERO")
         return res
 
 
@@ -64,15 +66,17 @@ with open(dir) as data:
     json_dat = json.load(data)
 
 @router.get("/{hero_id}/room")
-def SeeRoom(hero_id : int,session: Session = Depends(get_session)):
+def SeeRoom(hero_id : int,session: Session = Depends(get_session),owner_id = Depends(auth.check_user)):
     res = session.query(hero.Hero).get(hero_id)
     if res == None:
         raise HTTPException(status_code=404,detail=f"Héro avec ID={hero_id} non trouvé" )
+    if res.owner_id != owner_id : 
+        raise HTTPException(status_code=403,detail="NOT_YOUR_HERO")
     return json_dat["rooms"][res.salle]
 
 
 @router.post("/{hero_id}/move")
-def MoveHero(hero_id:int,direction:str,session: Session = Depends(get_session)):
+def MoveHero(hero_id:int,direction:str,session: Session = Depends(get_session),owner_id = Depends(auth.check_user)):
     res = session.query(hero.Hero).get(hero_id)
     
     if res == None:
@@ -85,7 +89,9 @@ def MoveHero(hero_id:int,direction:str,session: Session = Depends(get_session)):
         raise HTTPException(status_code=409,detail="IN COMBAT")
     if res.pv == 0 :
         raise HTTPException(status_code=409,detail="HERO DEAD")
-    
+    if res.owner_id != owner_id : 
+        raise HTTPException(status_code=403,detail="NOT_YOUR_HERO")
+     
     a =  json_dat["rooms"][res.salle]["exits"][direction]
     res.salle = a
     if json_dat["rooms"][res.salle]["monster"] != None:
@@ -100,7 +106,7 @@ def MoveHero(hero_id:int,direction:str,session: Session = Depends(get_session)):
 #palier 3 :
 from app.domain import logic
 @router.post("/{hero_id}/attack")
-def a(hero_id:int,session: Session = Depends(get_session)):       
+def a(hero_id:int,session: Session = Depends(get_session),owner_id = Depends(auth.check_user)):       
     res = session.query(hero.Hero).get(hero_id)
     if res == None:
         raise HTTPException(status_code=404,detail=f"Héro avec ID={hero_id} non trouvé")
@@ -110,6 +116,8 @@ def a(hero_id:int,session: Session = Depends(get_session)):
              raise HTTPException(status_code=409,detail="NO MONSTER")
     if res.pv == 0 :
          raise HTTPException(status_code=409,detail="HERO DEAD")
+    if res.owner_id != owner_id : 
+        raise HTTPException(status_code=403,detail="NOT_YOUR_HERO") 
     
     a = logic.Guerrier(res) #au cas où
     match res.classe : 
@@ -152,7 +160,7 @@ def a(hero_id:int,session: Session = Depends(get_session)):
 
 import asyncio
 @router.post("/{hero_id}/rest")
-async def b(hero_id:int,session: Session = Depends(get_session)):
+async def b(hero_id:int,session: Session = Depends(get_session),owner_id = Depends(auth.check_user)):
     res = session.query(hero.Hero).get(hero_id)
     if res == None:
         raise HTTPException(status_code=404,detail=f"Héro avec ID={hero_id} non trouvé")
@@ -160,6 +168,9 @@ async def b(hero_id:int,session: Session = Depends(get_session)):
         raise HTTPException(status_code=409,detail="HERO DEAD")
     if res.monstre_pv > 0 : 
         raise HTTPException(status_code=409,detail="IN COMBAT")
+    if res.owner_id != owner_id : 
+        raise HTTPException(status_code=403,detail="NOT_YOUR_HERO")
+    
     await asyncio.sleep(3)
     res.pv = res.pv_max
     session.commit()
