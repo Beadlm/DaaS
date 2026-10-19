@@ -33,7 +33,7 @@ app = FastAPI(
 )
 
 # TODO : branchez vos routers
-# app.include_router(heroes.router)
+app.include_router(heroes.router)
 
 
 @app.get("/health", tags=["Système"])
