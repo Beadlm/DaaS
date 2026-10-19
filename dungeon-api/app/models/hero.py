@@ -1,8 +1,7 @@
 from enum import Enum
 
-from sqlalchemy import create_engine, Column, Integer, String
-from sqlalchemy.orm import declarative_base, sessionmaker
-from sqlalchemy.pool import StaticPool
+from sqlalchemy import Column, Integer, String
+from sqlalchemy.orm import declarative_base
 
 
 Base = declarative_base()
@@ -26,6 +25,3 @@ class Hero(Base) :
     intelligence = Column(Integer)
 
 
-engine = create_engine("sqlite://", connect_args={"check_same_thread": False}, poolclass=StaticPool)
-Base.metadata.create_all(bind=engine)
-SessionLocal = sessionmaker(bind=engine)
