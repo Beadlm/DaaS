@@ -3,6 +3,7 @@ from pydantic import BaseModel, Field
 from enum import Enum
 from app.models import hero
 from app.database import *
+import json
 
 router = APIRouter(prefix="/heroes", tags=["Héros"])
 
@@ -18,8 +19,8 @@ class HeroModel(BaseModel) :
     agilite : int = Field(...,ge=1,le=8)
     intelligence : int = Field(...,ge=1,le=8)
 
-@router.post("/heroes",status_code=201)
-def a(h : HeroModel, session: Session = Depends(get_session)):
+@router.post("",status_code=201)
+def addHero(h : HeroModel, session: Session = Depends(get_session)):
     if h.force + h.agilite + h.intelligence == 10 : #je peux pas faire ça sur pydantic si?
         he = hero.Hero()
         he.nom = h.nom
@@ -38,14 +39,26 @@ def a(h : HeroModel, session: Session = Depends(get_session)):
     raise HTTPException(status_code=422,detail="élément envoyé invalide")
 
 
-@router.get("/heroes")
-def b(session: Session = Depends(get_session)):
+@router.get("")
+def getAllHeroes(session: Session = Depends(get_session)):
         return session.query(hero.Hero).all()
 
 
-@router.get("/heroes/{hero_id}")
-def c(hero_id : int,session: Session = Depends(get_session)):
+@router.get("/{hero_id}")
+def getHero(hero_id : int,session: Session = Depends(get_session)):
         res = session.query(hero.Hero).get(hero_id)
         if res == None:
             raise HTTPException(status_code=404,detail=f"Héro avec ID={hero_id} non trouvé" )
         return res
+
+
+#palier 2
+json_file = "dungeon-api\\data\\dungeon_map.json"
+@router.get("/{hero_id}/room")
+def a(hero_id : int,session: Session = Depends(get_session)):
+    res = session.query(hero.Hero).get(hero_id)
+    if res == None:
+        raise HTTPException(status_code=404,detail=f"Héro avec ID={hero_id} non trouvé" )
+    with open(json_file) as data:
+         a = json.load(data)
+    return a[res.salle]
