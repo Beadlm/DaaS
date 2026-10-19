@@ -1,4 +1,9 @@
+from enum import Enum
 from sqlmodel import SQLModel, Field
+class HeroClasse (str,Enum):
+    GUERRIER    = "guerrier"
+    MAGE        = "mage"
+    VOLEUR      = "voleur"
 
 class Hero(SQLModel, table=True) :
     __tablename__ = "Héros"
@@ -7,7 +12,7 @@ class Hero(SQLModel, table=True) :
     salle : str = "entree"
 
     nom : str = Field(..., min_length=3, max_length=20)
-    classe : str
+    classe : HeroClasse
     force : int
     agilite : int
     intelligence : int

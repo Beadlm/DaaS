@@ -56,8 +56,8 @@ Arrêtez le serveur et supprimez le fichier `dungeon.db` : il sera recréé au p
 
 ## Notre rendu
 
-- **Membres du groupe :**
+- **Membres du groupe :** Béatrix de Almeida 
 - **Lien du dépôt Git :**
 - **Palier atteint :** (1, 2, 3 ou 4)
 - **Bonus réalisés :**
-- **Ce qui ne fonctionne pas / difficultés :**
+- **Ce qui ne fonctionne pas / difficultés :** Adapter ce qu'on nous a appris dans un nouvel environnement (fichier main séparé des routes)
