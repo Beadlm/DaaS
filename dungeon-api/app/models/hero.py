@@ -21,11 +21,11 @@ class Hero(SQLModel,table=True) :
 
     or_ : int = 0
 
-    monstre_pv : int | None
+    monstre_pv : int | None = Field(default=None, nullable=True)
 
     victoire : bool = False 
 
-    owner_id : int | None #pour l'instant avant palier 4
+    owner_id : int | None  = Field(default=None, nullable=True)#pour l'instant avant palier 4
 
 
 
