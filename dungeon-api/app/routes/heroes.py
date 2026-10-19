@@ -30,7 +30,7 @@ def a(h : HeroModel, session: Session = Depends(get_session)):
         he.salle = "entree"
 
         session.add(he)
-        session.commit
+        session.commit()
         session.refresh(he)
 
         return he
