@@ -64,7 +64,7 @@ with open(dir) as data:
     json_dat = json.load(data)
 
 @router.get("/{hero_id}/room")
-def a(hero_id : int,session: Session = Depends(get_session)):
+def SeeRoom(hero_id : int,session: Session = Depends(get_session)):
     res = session.query(hero.Hero).get(hero_id)
     if res == None:
         raise HTTPException(status_code=404,detail=f"Héro avec ID={hero_id} non trouvé" )
@@ -72,7 +72,7 @@ def a(hero_id : int,session: Session = Depends(get_session)):
 
 
 @router.post("/{hero_id}/move")
-def b(hero_id:int,direction:str,session: Session = Depends(get_session)):
+def MoveHero(hero_id:int,direction:str,session: Session = Depends(get_session)):
     res = session.query(hero.Hero).get(hero_id)
     if res == None:
         raise HTTPException(status_code=404,detail=f"Héro avec ID={hero_id} non trouvé" )
@@ -87,3 +87,55 @@ def b(hero_id:int,direction:str,session: Session = Depends(get_session)):
          res.monstre_pv = json_dat["monsters"][json_dat["rooms"][res.salle]["monster"]]["hp"] #dit au jeu que le joueur est en combat
     session.commit()
     return a
+
+
+
+#palier 3 :
+from app.domain import logic
+@router.post("/{hero_id}/attack")
+def a(hero_id:int,session: Session = Depends(get_session)):
+    
+         
+    res = session.query(hero.Hero).get(hero_id)
+    if res == None:
+        raise HTTPException(status_code=404,detail=f"Héro avec ID={hero_id} non trouvé")
+    if json_dat["rooms"][res.salle]["monster"] == None:
+         raise HTTPException(status_code=409,detail=f"NO_MONSTER")
+    a = logic.Guerrier(res) #au cas où
+    match res.classe : 
+         
+        case HeroClasse.GUERRIER :
+            a = logic.Guerrier(res)
+
+        case HeroClasse.MAGE : 
+            a = logic.Mage(res)
+
+        case HeroClasse.VOLEUR : 
+            a = logic.Voleur(res)
+
+    monstre = json_dat["monsters"][json_dat["rooms"][res.salle]["monster"]]
+
+    di = a.calculer_degats()
+    crit = res.classe == HeroClasse.VOLEUR and a.count = 0
+    ds = a.subir_degats(monstre["attack"])
+    res.monstre_pv = res.monstre_pv - di if res.monstre_pv - di >= 0 else 0
+    if res.monstre_pv - di >= 0:
+        res.pv = res.pv - ds if res.pv - ds >= 0 else 0
+
+    issue = "monstre_vaincu" if res.monstre_pv == 0 else "heros_mort" if res.pv == 0 else "en cours"
+    org = 0 if issue in ["en_cours", "heros_mort"] else monstre["gold"]
+    return { 
+        "degats_infliges": di,
+        "critique": crit,
+        "degats_subis": ds,
+        "pv_heros": res.pv,
+        "pv_monstre": res.monstre_pv,
+        "issue": "en_cours",
+        "or_gagne": org,
+        "victoire": False
+        }
+        
+
+
+    
+    

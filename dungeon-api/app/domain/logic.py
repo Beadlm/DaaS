@@ -1,13 +1,14 @@
 
 
-class Hero ():
+class Hero():
     def __init__(self, hero_bdd):
-        self.pv = hero_bdd["pv"]
-        self.pv_max = hero_bdd["pv_max"]
+        self.pv = hero_bdd.pv
+        self.pv_max = hero_bdd.pv_max
 
-        self.agilite = hero_bdd["agilite"]
-        self.force = hero_bdd["force"]
-        self.intelligence = hero_bdd["intelligence"]
+        self.agilite = hero_bdd.agilite
+        self.force = hero_bdd.force
+        self.intelligence = hero_bdd.intelligence
+        self.count = -1
 
 
     def subir_degats(self,atk_monstre) :
@@ -27,8 +28,8 @@ class Mage(Hero):
 class Voleur(Hero):
     
     def __init__(self, hero_bdd):
-        self.count = 0
         super().__init__()
+        self.count = 0
     def calculer_degats(self) :
         if self.count == 2 :
             self.count = 0 
