@@ -15,7 +15,7 @@ from app.database import create_db_and_tables
 from app.models.hero import Hero  # noqa: F401
 
 # TODO : importez vos routers
-from app.routes import heroes
+from app.routes import heroes,auth
 
 
 @asynccontextmanager
@@ -34,7 +34,7 @@ app = FastAPI(
 
 # TODO : branchez vos routers
 app.include_router(heroes.router)
-
+app.include_router(auth.router)
 
 @app.get("/health", tags=["Système"])
 def health() -> dict:
