@@ -10,7 +10,6 @@ class HeroClasse (str,Enum):
     VOLEUR      = "voleur"
 
 class HeroModel(BaseModel) :
-    salle : str = "entree"
     nom : str = Field(..., min_length=3, max_length=20)
     classe : HeroClasse
     force :  int = Field(...,ge=1,le=8)
@@ -19,6 +18,20 @@ class HeroModel(BaseModel) :
 
 @router.post("/heroes",status_code=201)
 def a(h : HeroModel):
-    if h.force + h.agilite + h.intelligence == 10 :
-        pass
-    raise HTTPException(status_code=400,detail="élément envoyé invalide")
+    with hero.SessionLocal() as session:
+        if h.force + h.agilite + h.intelligence == 10 :
+            he = hero.Hero()
+            he.nom = h.nom
+            he.classe = h.classe
+            he.force = h.force
+            he.agilite = h.agilite
+            he.intelligence = h.intelligence
+            he.salle = "entree"
+
+            session.add(he)
+            session.commit
+            session.refresh(he)
+
+            return he
+            
+        raise HTTPException(status_code=400,detail="élément envoyé invalide")
