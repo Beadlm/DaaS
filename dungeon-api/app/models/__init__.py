@@ -2,3 +2,5 @@
 
 Exemple attendu : app/models/hero.py avec une classe Hero(SQLModel, table=True).
 """
+
+
