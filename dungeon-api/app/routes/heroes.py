@@ -74,12 +74,15 @@ def SeeRoom(hero_id : int,session: Session = Depends(get_session)):
 @router.post("/{hero_id}/move")
 def MoveHero(hero_id:int,direction:str,session: Session = Depends(get_session)):
     res = session.query(hero.Hero).get(hero_id)
+    
     if res == None:
         raise HTTPException(status_code=404,detail=f"Héro avec ID={hero_id} non trouvé" )
     if direction.lower() not in ["nord","sud","est","ouest"]:
          raise HTTPException(status_code=422,detail=f"direction {direction} N'est pas une direction valide (nord,sud,est,ouest)" )
     if direction.lower() not in json_dat["rooms"][res.salle]["exits"].keys():
          raise HTTPException(status_code=400,detail="NO EXIT")
+    if res.monstre_pv > 0 : 
+         raise HTTPException(status_code=409,detail="NO EXIT")
 
     a =  json_dat["rooms"][res.salle]["exits"][direction]
     res.salle = a
@@ -124,15 +127,16 @@ def a(hero_id:int,session: Session = Depends(get_session)):
 
     issue = "monstre_vaincu" if res.monstre_pv == 0 else "heros_mort" if res.pv == 0 else "en cours"
     org = 0 if issue in ["en_cours", "heros_mort"] else monstre["gold"]
+    vic = issue == "monstre_vaincu" and monstre["name"] == "La Liche"
     return { 
         "degats_infliges": di,
         "critique": crit,
         "degats_subis": ds,
         "pv_heros": res.pv,
         "pv_monstre": res.monstre_pv,
-        "issue": "en_cours",
+        "issue": issue,
         "or_gagne": org,
-        "victoire": False
+        "victoire": vic
         }
         
 

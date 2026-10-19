@@ -8,7 +8,6 @@ class Hero():
         self.agilite = hero_bdd.agilite
         self.force = hero_bdd.force
         self.intelligence = hero_bdd.intelligence
-        self.count = -1
 
 
     def subir_degats(self,atk_monstre) :
@@ -26,10 +25,10 @@ class Mage(Hero):
         return 1 + self.intelligence * 3
 
 class Voleur(Hero):
-    
+    count = 0
     def __init__(self, hero_bdd):
         super().__init__()
-        self.count = 0
+        
     def calculer_degats(self) :
         if self.count == 2 :
             self.count = 0 
