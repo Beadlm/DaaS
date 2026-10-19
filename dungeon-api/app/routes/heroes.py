@@ -53,12 +53,14 @@ def getHero(hero_id : int,session: Session = Depends(get_session)):
 
 
 #palier 2
-json_file = "dungeon-api\\data\\dungeon_map.json"
+from pathlib import Path
+dir = Path(__file__).resolve().parent.parent.parent / "data" / "dungeon_map.json"
 @router.get("/{hero_id}/room")
 def a(hero_id : int,session: Session = Depends(get_session)):
     res = session.query(hero.Hero).get(hero_id)
     if res == None:
         raise HTTPException(status_code=404,detail=f"Héro avec ID={hero_id} non trouvé" )
-    with open(json_file) as data:
+    with open(dir) as data:
+
          a = json.load(data)
-    return a[res.salle]
+    return a["room"][res.salle]
