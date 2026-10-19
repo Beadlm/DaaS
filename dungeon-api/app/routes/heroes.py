@@ -34,7 +34,7 @@ def addHero(h : HeroModel, session: Session = Depends(get_session)):
 
         he.pv_max = 20 + h.force * 2
         he.pv = he.pv_max
-        
+
         session.add(he)
         session.commit()
         session.refresh(he)
@@ -83,5 +83,7 @@ def b(hero_id:int,direction:str,session: Session = Depends(get_session)):
 
     a =  json_dat["rooms"][res.salle]["exits"][direction]
     res.salle = a
+    if json_dat["rooms"][res.salle]["monster"] != None:
+         res.monstre_pv = json_dat["monsters"][json_dat["rooms"][res.salle]["monster"]]["hp"] #dit au jeu que le joueur est en combat
     session.commit()
     return a
