@@ -150,5 +150,18 @@ def a(hero_id:int,session: Session = Depends(get_session)):
         
 
 
-    
+import asyncio
+@router.post("/{hero_id}/rest")
+async def b(hero_id:int,session: Session = Depends(get_session)):
+    res = session.query(hero.Hero).get(hero_id)
+    if res == None:
+        raise HTTPException(status_code=404,detail=f"Héro avec ID={hero_id} non trouvé")
+    if res.pv == 0 :
+        raise HTTPException(status_code=409,detail="HERO DEAD")
+    if res.monstre_pv > 0 : 
+        raise HTTPException(status_code=409,detail="IN COMBAT")
+    await asyncio.sleep(3)
+    res.pv = res.pv_max
+    session.commit()
+    return {"health" : "Healed"}
     
