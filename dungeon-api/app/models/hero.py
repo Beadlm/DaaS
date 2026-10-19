@@ -25,7 +25,7 @@ class Hero(SQLModel,table=True) :
 
     victoire : bool = False 
 
-    owner_id : int
+    owner_id : int | None #pour l'instant avant palier 4
 
 
 

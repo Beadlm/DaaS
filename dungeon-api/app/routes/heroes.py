@@ -25,11 +25,16 @@ def addHero(h : HeroModel, session: Session = Depends(get_session)):
         he = hero.Hero()
         he.nom = h.nom
         he.classe = h.classe
+
         he.force = h.force
         he.agilite = h.agilite
         he.intelligence = h.intelligence
+
         he.salle = "entree"
 
+        he.pv_max = 20 + h.force * 2
+        he.pv = he.pv_max
+        
         session.add(he)
         session.commit()
         session.refresh(he)
