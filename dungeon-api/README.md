@@ -57,7 +57,7 @@ Arrêtez le serveur et supprimez le fichier `dungeon.db` : il sera recréé au p
 ## Notre rendu
 
 - **Membres du groupe :** Béatrix de Almeida 
-- **Lien du dépôt Git :**
-- **Palier atteint :** (1, 2, 3 ou 4)
-- **Bonus réalisés :**
-- **Ce qui ne fonctionne pas / difficultés :** Adapter ce qu'on nous a appris dans un nouvel environnement (fichier main séparé des routes)
+- **Lien du dépôt Git :** https://github.com/Beadlm/DaaS/
+- **Palier atteint :**  4
+- **Bonus réalisés :** trop fatiguée
+- **Ce qui ne fonctionne pas / difficultés :** Adapter ce qu'on nous a appris dans un nouvel environnement (fichier main séparé des routes). Avoir à faire des choses (tables bdd et login) d'une manière non apprise en cours. Réussire a tester après le système de login car il ne nous as pas été expliqué correctement en cours et donc ceci reste un concept plutot abstrait (surtout pour une personne neurodivergente) dû au manque de pratique externe (jamais login sur swagger avant) et de vraies explications de concepts (les exercices sur Yquest n'expliquent rien juste demandent à faire)
